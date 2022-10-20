@@ -8,7 +8,7 @@
 	- For  $x_t$  ,  you  can get  it by flowing formula :
 		- $q(x_t|x_0) = \mathcal{N} \Big(x_t; \sqrt{\bar\alpha_t} x_0, (1-\bar\alpha_t) \mathbf{I} \Big)]$
 	- The loss 
-		- ![5885e52c9c5796fc695e9c35dbca7f70.png](../_resources/5885e52c9c5796fc695e9c35dbca7f70.png)
+		- ![5885e52c9c5796fc695e9c35dbca7f70.png](./_resources/loss.png)
 	- For more details of the model, please refer to 
 		- 	 [1] [Labml](https://nn.labml.ai/diffusion/ddpm/index.html) 
 		- 	 [2] [Denoising Diffusion Probabilistic Models](https://arxiv.org/abs/2006.11239) 
