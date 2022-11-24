@@ -303,7 +303,7 @@ class UNet(nn.Module):
         self.image_proj = nn.Conv2d(image_channels, n_channels, kernel_size=(3, 3), padding=(1, 1))
 
         # Time embedding layer. Time embedding has `n_channels * 4` channels , the N_channel is the Initialize embedding dimension
-        self.time_emb = TimeEmbedding(n_channels * 4) # TODO : why this ? Well, maybe it just a trick , that's *8 maybe work well too .
+        self.time_emb = TimeEmbedding(n_channels * 4) # TODO : why * 4 ? Well, maybe it just a trick , that's *8 maybe work well too .
 
         # #### First half of U-Net - decreasing resolution
         down = []

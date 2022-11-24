@@ -20,7 +20,7 @@ class DenoiseDiffusion:
         * `device` is the device to place constants on
         """
         super().__init__()
-        self.eps_model = eps_model
+        self.eps_model = eps_model # a network
 
         # Create $\beta_1, \dots, \beta_T$ linearly increasing variance schedule
         self.beta = torch.linspace(0.0001, 0.02, n_steps).to(device)
@@ -38,22 +38,14 @@ class DenoiseDiffusion:
         # $\sigma^2 = \beta$
         self.sigma2 = self.beta
 
-    def q_xt_x0(self, x0: torch.Tensor, t: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
-        """
-        #### Get $q(x_t|x_0)$ distribution
-        \begin{align}
-        q(x_t|x_0) &= \mathcal{N} \Big(x_t; \sqrt{\bar\alpha_t} x_0, (1-\bar\alpha_t) \mathbf{I} \Big)
-        \end{align}
-        """
-
-        # [gather](utils.html) $\alpha_t$ and compute $\sqrt{\bar\alpha_t} x_0$
-        mean = gather(self.alpha_bar, t) ** 0.5 * x0
-        # $(1-\bar\alpha_t) \mathbf{I}$
-        var = 1 - gather(self.alpha_bar, t)
-        #
-        return mean, var
-
     def q_sample(self, x0: torch.Tensor, t: torch.Tensor, eps: Optional[torch.Tensor] = None):
+        '''
+
+        :param x0:
+        :param t:
+        :param eps:
+        :return: a noise xt from x0
+        '''
         """
         #### Sample from $q(x_t|x_0)$
         \begin{align}
@@ -67,12 +59,21 @@ class DenoiseDiffusion:
         if eps is None:
             eps = torch.randn_like(x0)
 
-        # get $q(x_t|x_0)$
-        mean, var = self.q_xt_x0(x0, t)
+        # get mean var of  $q(x_t|x_0)$
+        mean = gather(self.alpha_bar, t) ** 0.5 * x0
+        # $(1-\bar\alpha_t) \mathbf{I}$
+        var = 1 - gather(self.alpha_bar, t)
+
         # Sample from $q(x_t|x_0)$
         return mean + (var ** 0.5) * eps
 
     def p_sample(self, xt: torch.Tensor, t: torch.Tensor):
+        '''
+
+        :param xt:
+        :param t:
+        :return: xt-1 from xt
+        '''
         """
         #### Sample from $\textcolor{lightgreen}{p_\theta}(x_{t-1}|x_t)$
         \begin{align}
@@ -120,7 +121,7 @@ class DenoiseDiffusion:
             noise = torch.randn_like(x0) # corresponding epsilon_0 for image in batch
 
         # Sample $x_t$ for $q(x_t|x_0)$
-        xt = self.q_sample(x0, t, eps=noise) # generate the xt image
+        xt = self.q_sample(x0, t, eps=noise) # generate the xt image : p(xt|x0) , just random sample a step ,do not all steps
         # Get $\textcolor{lightgreen}{\epsilon_\theta}(\sqrt{\bar\alpha_t} x_0 + \sqrt{1-\bar\alpha_t}\epsilon, t)$
         eps_theta = self.eps_model(xt, t) # generator epsilon_theta based on the xt and t
 

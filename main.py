@@ -96,15 +96,16 @@ class Configs(BaseConfigs):
             # Remove noise for $T$ steps
             for t_ in monit.iterate('Sample', self.n_steps):
                 # $t$
-                t = self.n_steps - t_ - 1  # t_ = 0 , t = n - 0 -1
+                t = self.n_steps - t_ - 1  # t_ = 0 , t = n - 0 -1 , ( 0 ~ n -1)
                 # Sample from $\textcolor{lightgreen}{p_\theta}(x_{t-1}|x_t)$
-                x = self.diffusion.p_sample(x, x.new_full((self.n_samples,), t, dtype=torch.long))
+                # xt - > xt-1
+                x = self.diffusion.p_sample(x,  x.new_full((self.n_samples,), t, dtype=torch.long) )
                 '''
                 x = torch.randn((8,3,224,224))
                 t = 10 
                 xx = x.new_full((8,), t, dtype=torch.long)
                 xx : tensor([10, 10, 10, 10, 10, 10, 10, 10])
-                
+                shape with batchsize
                 '''
 
             # Log samples
