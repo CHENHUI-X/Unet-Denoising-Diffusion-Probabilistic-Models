@@ -45,7 +45,7 @@ class TimeEmbedding(nn.Module):
         half_dim = self.n_channels // 8
         emb = math.log(10_000) / (half_dim - 1) # 10_000 = 10000
         emb = torch.exp(torch.arange(half_dim, device=t.device) * -emb)
-        # At this point, the embedding is one line,
+        # At this point, the embedding is one line,(Actually it comes from "attention is all you need")
         # and each subsequent line (n_step lines in total) is
         # only a difference of a coefficient (i), the first line
         # as a whole is emb*1, and the second line is emb*2
